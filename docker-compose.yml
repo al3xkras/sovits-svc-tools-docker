@@ -1,0 +1,26 @@
+services:
+  sovits-svc:
+    container_name: sovits-svc
+    build: 
+      context: ./sovits_docker
+      dockerfile: Dockerfile
+    volumes:
+      # Necessary to connect to the X11 Display
+      - /tmp/.X11-unix:/tmp/.X11-unix 
+      - ~/.Xauthority:/home/sovits/.Xauthority
+      - /dev/snd:/dev/snd # remove if audio passthrough is not required
+      - ./share:/home/sovits/share # shared folder
+    environment:
+      - DISPLAY=${DISPLAY}
+      - RUN_UVR5=true # modify to start/stop the UVR5 GUI 
+      - RUN_SOVITS_GUI=true # modify to start/stop the SoVITS GUI
+    devices:
+      - /dev/snd # remove if audio passthrough is not required
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+  
