@@ -26,17 +26,21 @@ RUN pip install --no-cache-dir --global-option='build_ext' \
 
 RUN git clone --depth 1 https://github.com/Anjok07/ultimatevocalremovergui uvr5
 RUN cd uvr5 && pip install --no-cache-dir -r requirements.txt
+RUN mkdir default && cp -rf ~/uvr5 ~/default/uvr5
 
 USER root
 
 COPY entrypoint.sh /home/sovits
 RUN chown -h sovits:sovits entrypoint.sh && chmod +x entrypoint.sh
+
 RUN apt-get clean
+RUN usermod -aG audio sovits
 
 USER sovits
 
 # default env
 ENV RUN_SOVITS_GUI=true
 ENV RUN_UVR5=false
+ENV PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
 CMD /home/sovits/entrypoint.sh

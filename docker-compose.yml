@@ -5,17 +5,26 @@ services:
       context: ./sovits_docker
       dockerfile: Dockerfile
     volumes:
-      # Necessary to connect to the X11 Display
       - /tmp/.X11-unix:/tmp/.X11-unix 
-      - ~/.Xauthority:/home/sovits/.Xauthority
-      - /dev/snd:/dev/snd # remove if audio passthrough is not required
-      - ./share:/home/sovits/share # shared folder
+      # Optionally, run "sudo xhost +local:" on the host system to allow local connections.
+      # - /home/<your X11 user name>/.Xauthority:/home/sovits/.Xauthority
+      - ./share:/home/sovits/share
+      # Make sure the host volume has read/write permissions for sovits
+      - ./uvr5:/home/sovits/uvr5
+      # - /dev/snd:/dev/snd # ALSA audio passthrough. Will not work if any of your host processes use the audio devices.
+      # - ${XDG_RUNTIME_DIR}/pulse:${XDG_RUNTIME_DIR}/pulse
+      # - /home/<your user name>/.config/pulse/cookie:/home/sovits/.config/pulse/cookie
+    env_file: .env
     environment:
       - DISPLAY=${DISPLAY}
       - RUN_UVR5=true # modify to start/stop the UVR5 GUI 
       - RUN_SOVITS_GUI=true # modify to start/stop the SoVITS GUI
-    devices:
-      - /dev/snd # remove if audio passthrough is not required
+      # - PULSE_SERVER=unix:${XDG_RUNTIME_DIR}/pulse/native
+      # - PULSE_COOKIE=/home/sovits/.config/pulse/cookie
+    #devices:
+    #  - /dev/snd # Enable for ALSA audio passthrough. Please open a pull request if you were able to successfully configure pulseaudio.
+    #group_add:
+    #  - audio
     deploy:
       resources:
         reservations:

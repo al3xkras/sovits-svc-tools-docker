@@ -12,8 +12,6 @@ A unified docker environment combining [SoVITS SVC fork](https://github.com/voic
 
 ### Installation Steps
 
-To set up the environment, run the following command:
-
 ```bash
 docker compose up -d --build
 ```
@@ -21,7 +19,7 @@ docker compose up -d --build
 
 ### Expected Runtime Behavior
 
-Once the containers are up and running (assuming the default `docker-compose.yml` configuration):
+Once the container is up and running (assuming the default `docker-compose.yml` configuration):
 
 - Two PyQT windows will appear on your host system for SoVITS-SVC and UVR5.
 - The SoVITS-SVC fork will have access to the host's audio devices, allowing for real-time audio processing.
@@ -30,5 +28,5 @@ Once the containers are up and running (assuming the default `docker-compose.yml
 
 ### Disclaimer
 
-This software is provided "as is," without any warranty of any kind. Use it at your own risk.
+This software is provided "as is," without warranty of any kind. Use it at your own risk.
 
