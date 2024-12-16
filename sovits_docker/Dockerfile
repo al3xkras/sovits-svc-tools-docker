@@ -28,8 +28,8 @@ RUN git clone --depth 1 https://github.com/Anjok07/ultimatevocalremovergui uvr5
 RUN cd uvr5 && pip install --no-cache-dir -r requirements.txt
 RUN mkdir default && cp -rf ~/uvr5 ~/default/uvr5
 
-RUN pip install pyannote.audio typer
-RUN pip install "audio-separator[gpu]" --no-deps
+RUN pip install --no-cache-dir pyannote.audio typer
+RUN pip install --no-cache-dir "audio-separator[gpu]" --no-deps
 
 USER root
 

@@ -1,3 +1,25 @@
+"""
+## Function
+
+This script automatically performs the following steps:
+0. (in short) Speaker diarization from raw audio/video files in an arbitrary format. Steps: 
+1. Audio is extracted from videos and converted to MKV 40100 mono. Note that other input audio files will not be converted to MKV automatically.
+2. Splits long audio files into chunks.
+3. Extracts vocals from input audio files.
+4. Combines audio chunks (processed vocals) back to original audios.
+5. Performs speaker diarization using pyannote.
+
+To use this script:
+
+1. Make sure that the default model or the model that you want to use is loaded from the UVR5 GUI.
+- The default vocals extraction model is hdemucs_mmi (HDEMUCS v4 MMI)
+2. Make sure the following pyannote models were loaded. Use your authentication token to download models manually:
+- pyannote/speaker-diarization-3.1
+- pyannote/embedding (optional but may be required by other scripts)
+3. Put input audio/video files into the ~/share/inputs directory of the container.
+4. cd to scripts and run `python extract_speakers.py`. Optionally specify custom parameters.
+5. Check the ~/share/outputs directory. It should contain the speaker diarization results for each audio file and vocals extracted from the input files.
+"""
 import os
 import subprocess
 from pyannote.audio import Pipeline

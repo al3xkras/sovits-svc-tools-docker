@@ -19,8 +19,8 @@ services:
     env_file: .env
     environment:
       - DISPLAY=${DISPLAY}
-      - RUN_UVR5=false # modify to start/stop the UVR5 GUI 
-      - RUN_SOVITS_GUI=false # modify to start/stop the SoVITS GUI
+      - RUN_UVR5=true # modify to start/stop the UVR5 GUI 
+      - RUN_SOVITS_GUI=true # modify to start/stop the SoVITS GUI
       # - PULSE_SERVER=unix:${XDG_RUNTIME_DIR}/pulse/native
       # - PULSE_COOKIE=/home/sovits/.config/pulse/cookie
     #devices:
