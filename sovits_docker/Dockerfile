@@ -30,6 +30,10 @@ RUN mkdir default && cp -rf ~/uvr5 ~/default/uvr5
 
 RUN pip install --no-cache-dir pyannote.audio typer
 RUN pip install --no-cache-dir "audio-separator[gpu]" --no-deps
+# only onnxruntime_gpu is required, however onnxruntime_cpu is installed as a dependency
+RUN pip uninstall -y onnxruntime
+
+RUN pip install --no-deps --no-cache-dir --force-reinstall onnxruntime-gpu --index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-11/pypi/simple/
 
 USER root
 
