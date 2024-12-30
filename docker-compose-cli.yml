@@ -1,0 +1,33 @@
+services:
+  sovits-svc:
+    container_name: sovits-svc-cli
+    build: 
+      context: ./sovits_docker
+      dockerfile: Dockerfile
+      
+    volumes:
+    
+      # shared folder. Make sure the host volume has correct read/write permissions for sovits
+      - ./share:/home/sovits/share
+      
+      # UVR5 and pytorch persistence directory. Downloaded models will be stored here.
+      - ./uvr5:/home/sovits/uvr5
+      - ./torch_checkpoints:/home/sovits/.cache/torch/
+      
+      # Scripts folder (read only)
+      - ./scripts:/home/sovits/scripts:ro
+      
+    env_file: .env
+    
+    environment:
+      - RUN_UVR5=false
+      - RUN_SOVITS_GUI=false
+      
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+   

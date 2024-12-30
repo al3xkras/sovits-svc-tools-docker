@@ -1,0 +1,40 @@
+services:
+  sovits-svc:
+    container_name: sovits-svc-gui
+    build: 
+      context: ./sovits_docker
+      dockerfile: Dockerfile
+      
+    volumes:
+    
+      # X11 display socket
+      # Optionally, run "sudo xhost +local:" on the host system to allow local connections to the X11 dispay server.
+      - /tmp/.X11-unix:/tmp/.X11-unix 
+      # - /home/$(id -nu)/.Xauthority:/home/sovits/.Xauthority # or, uncomment this line, which is not recommended.
+      
+      # shared folder. Make sure the host volume has correct read/write permissions for sovits
+      - ./share:/home/sovits/share
+      
+      # UVR5 and pytorch persistence directory. Downloaded models will be stored here.
+      - ./uvr5:/home/sovits/uvr5
+      - ./torch_checkpoints:/home/sovits/.cache/torch/
+      
+      # Scripts folder (read only)
+      - ./scripts:/home/sovits/scripts:ro
+      
+    env_file: .env
+    
+    environment:
+      - DISPLAY=${DISPLAY}
+      - RUN_UVR5=true # modify to start/stop the UVR5 GUI 
+      - RUN_SOVITS_GUI=true # modify to start/stop the SoVITS GUI
+        
+    # GPU device reservation
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+   

@@ -13,7 +13,7 @@ RUN echo '\nexport PATH=/home/sovits/.local/bin:$PATH' >> /home/sovits/.bashrc
 
 USER sovits
 
-# Thank to UVR5 for using deprecated packages
+# Yep, UVR5 GUI still uses deprecated sklearn packages
 ENV SKLEARN_ALLOW_DEPRECATED_SKLEARN_PACKAGE_INSTALL=True
 ENV PATH=/home/sovits/.local/bin:$PATH
 ENV HOME=/home/sovits
@@ -30,12 +30,16 @@ RUN mkdir default && cp -rf ~/uvr5 ~/default/uvr5
 
 RUN pip install --no-cache-dir pyannote.audio typer
 RUN pip install --no-cache-dir "audio-separator[gpu]" --no-deps
-# only onnxruntime_gpu is required, however onnxruntime_cpu is installed as a dependency
+
+# Only onnxruntime_gpu is required, however onnxruntime_cpu is installed as a dependency
 RUN pip uninstall -y onnxruntime
 
-RUN pip install --no-deps --no-cache-dir --force-reinstall onnxruntime-gpu --index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-11/pypi/simple/
+RUN pip install --no-deps --no-cache-dir --force-reinstall onnxruntime-gpu \
+    --index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-11/pypi/simple/
 
 USER root
+
+RUN apt-get install -y pulseaudio pulseaudio-utils
 
 COPY entrypoint.sh /home/sovits
 RUN chown -h sovits:sovits entrypoint.sh && chmod +x entrypoint.sh

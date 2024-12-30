@@ -1,0 +1,58 @@
+services:
+  sovits-svc:
+    container_name: sovits-svc
+    build: 
+      context: ./sovits_docker
+      dockerfile: Dockerfile
+      
+    volumes:
+    
+      # X11 display socket
+      # Optionally, run "sudo xhost +local:" on the host system to allow local connections to the X11 dispay server.
+      - /tmp/.X11-unix:/tmp/.X11-unix 
+      # - /home/$(id -nu)/.Xauthority:/home/sovits/.Xauthority # or, uncomment this line, which is not recommended.
+      
+      # shared folder. Make sure the host volume has correct read/write permissions for sovits
+      - ./share:/home/sovits/share
+      
+      # UVR5 and pytorch persistence directory. Downloaded models will be stored here.
+      - ./uvr5:/home/sovits/uvr5
+      - ./torch_checkpoints:/home/sovits/.cache/torch/
+      
+      # Scripts folder (read only)
+      - ./scripts:/home/sovits/scripts:ro
+      
+      # ALSA devices passthrough. Will not work if any of your host's processes use ALSA.
+      # - /dev/snd:/dev/snd 
+      
+      # Pulseaudio passthrough. Will likely work if you are using pulseaudio on your host system. 
+      # This setup may require modifications depending on your system.
+      - ${XDG_RUNTIME_DIR}/pulse/native:${XDG_RUNTIME_DIR}/pulse/native
+      - /home/$(id -nu)/.config/pulse/cookie:/home/sovits/.config/pulse/cookie
+      
+    env_file: .env
+    
+    environment:
+      - DISPLAY=${DISPLAY}
+      - RUN_UVR5=true # modify to start/stop the UVR5 GUI 
+      - RUN_SOVITS_GUI=true # modify to start/stop the SoVITS GUI
+      
+      # Pulseaudio server socket, cookie, and the runtime directory.
+      - PULSE_SERVER=unix:${XDG_RUNTIME_DIR}/pulse/native
+      - PULSE_COOKIE=/home/sovits/.config/pulse/cookie
+      - XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR}
+    
+    # The container user will be added to the host's group "users" (or gid=1000)
+    # If your host user's UID or GID is not 1000, the Dockerfile may require modifications to resolve pulseaudio user permissions
+    group_add:
+      - users
+    
+    # GPU device reservation
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+   
