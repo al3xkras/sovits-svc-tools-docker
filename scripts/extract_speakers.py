@@ -21,6 +21,13 @@ To use this script:
 5. Check the ~/share/outputs directory. It should contain the speaker diarization results for each audio file and vocals extracted from the input files.
 """
 import os
+
+os.environ["HF_HUB_OFFLINE"] = "1"
+os.environ["SB_DISABLE_TELEMETRY"] = "1"
+os.environ["SB_DISABLE_QUIRKS"] = "disable_jit_profiling"
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+
 import subprocess
 from pyannote.audio import Pipeline
 from pydub import AudioSegment
@@ -51,7 +58,7 @@ class AudioProcessor:
         self.output_dir = output_dir
         self.uvr5_model = uvr5_model
         os.makedirs(self.output_dir, exist_ok=True)
-        self.pipeline = Pipeline.from_pretrained("pyannote/speaker-diarization-3.1").to(device)
+        self.pipeline = Pipeline.from_pretrained("pyannote/speaker-diarization-3.1", use_auth_token=None).to(device)
         logging.info("Initialized AudioProcessor with input directory: %s and output directory: %s", self.input_dir, self.output_dir)
 
     def extract_audio_from_videos(self):
@@ -63,7 +70,7 @@ class AudioProcessor:
                 audio_output_path = os.path.splitext(file_path)[0] + '.wav'
                 logging.info("Extracting audio from %s to %s", file_path, audio_output_path)
                 subprocess.run([
-                    'ffmpeg', '-i', file_path, '-ac', '1', '-ar', '22050', audio_output_path
+                    'ffmpeg', '-i', file_path, '-ac', '1', '-ar', '44100', audio_output_path
                 ], check=True)
                 os.remove(file_path)
                 gc.collect()
